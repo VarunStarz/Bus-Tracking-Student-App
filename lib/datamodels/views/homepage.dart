@@ -37,11 +37,17 @@ class _HomePageState extends State<HomePage> {
   late PolylinePoints polylinePoints;
   late GoogleMapController mapController;
 
+  final LocationService locationService = LocationService();
+
+  bool? isEmpty;
+
   @override
   void initState() {
     /*getCurrentLocation().listen((position) {
       centerScreen(position);
     });*/
+    if (place.isEmpty) isEmpty = true;
+
     Geolocator.getPositionStream(
             locationSettings: LocationSettings(
                 accuracy: LocationAccuracy.bestForNavigation,
@@ -146,12 +152,34 @@ class _HomePageState extends State<HomePage> {
                                   finalPosition!.longitude!);
 
                               print(totalDistance.toString());
+
+                              if (place.isNotEmpty) isEmpty = false;
                             },
                             child: Text('Search')),
                         SizedBox(
                           height: 10,
                         ),
                         Text(totalDistance.toString()),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        StreamBuilder<UserLocation>(
+                          stream: locationService.locationStream,
+                          builder: (context, snapshot) {
+                            if (!snapshot.hasData)
+                              return Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            return Center(
+                              child: (isEmpty == true)
+                                  ? Center(
+                                      child: CircularProgressIndicator(),
+                                    )
+                                  : Text(
+                                      'Distance: ${Geolocator.distanceBetween(widget.initialPosition.latitude!, widget.initialPosition.longitude!, finalPosition!.latitude!, finalPosition!.longitude!)}'),
+                            );
+                          },
+                        ),
                       ],
                     ),
                   ),
