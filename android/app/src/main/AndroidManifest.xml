@@ -2,7 +2,7 @@
     package="com.example.mapfollow2">
 
    <application
-        android:label="mapfollow2"
+        android:label="Wakey 2.0"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
@@ -40,5 +40,9 @@
             android:value="2" />
         <meta-data android:name="com.google.android.geo.API_KEY" android:value="AIzaSyCu0EbP48H4G8vzUKFyGw5LHO57lRbtr2s"/>
     </application>
-    
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
+    <uses-permission android:name="android.hardware.location.gps" />
+
 </manifest>

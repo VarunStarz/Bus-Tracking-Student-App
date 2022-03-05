@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:location/location.dart';
 import 'package:mapfollow2/datamodels/user_location.dart';
-import 'package:mapfollow2/datamodels/views/homepage.dart';
 
 class LocationService {
   late UserLocation _currentLocation;

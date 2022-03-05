@@ -1,20 +1,22 @@
 import 'dart:async';
-
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
-import 'package:geocoder/geocoder.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mapfollow2/datamodels/user_location.dart';
+import 'package:mapfollow2/datamodels/views/alarmpage.dart';
 import 'package:mapfollow2/services/location_service.dart';
 import 'package:provider/provider.dart';
-import 'package:search_map_place_updated/search_map_place_updated.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 
 String place = '';
+String? rideOver;
 double totalDistance = 0.0;
 double? newLat, newLong;
 UserLocation? finalPosition;
+
+late AudioPlayer audioPlayer = AudioPlayer();
 
 class Distance {
   final double dist = totalDistance;
@@ -39,6 +41,9 @@ class _HomePageState extends State<HomePage> {
 
   final LocationService locationService = LocationService();
 
+  late double dist;
+  var data;
+
   bool? isEmpty;
 
   @override
@@ -50,14 +55,27 @@ class _HomePageState extends State<HomePage> {
 
     Geolocator.getPositionStream(
             locationSettings: LocationSettings(
-                accuracy: LocationAccuracy.bestForNavigation,
-                distanceFilter: 1))
+                accuracy: LocationAccuracy.high, distanceFilter: 1))
         .listen((position) {
       centerScreen(UserLocation(
           latitude: position.latitude, longitude: position.longitude));
     });
     polylinePoints = PolylinePoints();
+
+    /*if (data == 'Ride Over') {
+      setState(() {
+        locationService.locationStream.drain();
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (context) => alarmPage()));
+      });
+    }*/
+
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   /*Stream<UserLocation> getCurrentLocation() {
@@ -87,7 +105,7 @@ class _HomePageState extends State<HomePage> {
               onMapCreated: (GoogleMapController controller) {
                 _controller.complete(controller);
                 mapController = controller;
-                setPolylines();
+                //setPolylines();
               },
               polylines: _polylines,
             ),
@@ -159,25 +177,76 @@ class _HomePageState extends State<HomePage> {
                         SizedBox(
                           height: 10,
                         ),
-                        Text(totalDistance.toString()),
+                        Text(
+                            'Total Distance: ${totalDistance.toString()} meters'),
                         SizedBox(
                           height: 10,
                         ),
                         StreamBuilder<UserLocation>(
                           stream: locationService.locationStream,
                           builder: (context, snapshot) {
+                            if (isEmpty == true)
+                              return Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            else {
+                              dist = Geolocator.distanceBetween(
+                                  widget.initialPosition.latitude!,
+                                  widget.initialPosition.longitude!,
+                                  finalPosition!.latitude!,
+                                  finalPosition!.longitude!);
+                            }
+                            /*if (data == 'Ride Over') {
+                              locationService.locationStream.drain();
+                              Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => alarmPage()));
+                            }*/
+
                             if (!snapshot.hasData)
                               return Center(
                                 child: CircularProgressIndicator(),
                               );
-                            return Center(
+
+                            /*return Center(
                               child: (isEmpty == true)
                                   ? Center(
                                       child: CircularProgressIndicator(),
                                     )
-                                  : Text(
-                                      'Distance: ${Geolocator.distanceBetween(widget.initialPosition.latitude!, widget.initialPosition.longitude!, finalPosition!.latitude!, finalPosition!.longitude!)}'),
-                            );
+                                  : data = Text((dist <= 2375)
+                                      ? rideOver = 'Ride Over'
+                                      : ('Distance: ${rideOver = dist.toString()}')),
+                            );*/
+
+                            if (dist.truncate() <= 1000) {
+                              rideOver = 'Ride Over';
+                              locationService.locationStream.drain();
+
+                              WidgetsBinding.instance!
+                                  .addPostFrameCallback((_) async {
+                                Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => alarmPage1()));
+
+                                audioPlayer = await AudioCache()
+                                    .play('wakeyalarm2.0.mp3');
+                              });
+                            } else {
+                              rideOver = dist.toString();
+                            }
+
+                            if (isEmpty == true) {
+                              return Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            } else {
+                              return Center(
+                                child: Text(
+                                    'Realtime Distance: ${rideOver} meters'),
+                              );
+                            }
                           },
                         ),
                       ],
@@ -214,7 +283,7 @@ class _HomePageState extends State<HomePage> {
         target: LatLng(position.latitude!, position.longitude!), zoom: 18.0)));
   }
 
-  void setPolylines() async {
+  /*void setPolylines() async {
     List<Location> coordinates = await locationFromAddress(place);
     PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
         "AIzaSyCu0EbP48H4G8vzUKFyGw5LHO57lRbtr2s",
@@ -237,5 +306,31 @@ class _HomePageState extends State<HomePage> {
         );
       });
     }
+  }*/
+}
+
+class alarm extends StatefulWidget {
+  const alarm({Key? key}) : super(key: key);
+
+  @override
+  _alarmState createState() => _alarmState();
+}
+
+class _alarmState extends State<alarm> {
+  @override
+  void initState() {
+    WidgetsBinding.instance!.addPostFrameCallback((_) async {
+      audioPlayer = await AudioCache().play('wakeyalarm2.0.mp3');
+    });
+
+    super.initState();
+  }
+
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: ElevatedButton(child: Text('STOP'), onPressed: () {}),
+      ),
+    );
   }
 }
