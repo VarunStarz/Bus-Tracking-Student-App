@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "75524612449",
+    "project_id": "bus-tracking-test-86d43",
+    "storage_bucket": "bus-tracking-test-86d43.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:75524612449:android:3fcad5e3686f2e25732520",
+        "android_client_info": {
+          "package_name": "com.example.bus_tracking_test"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "75524612449-7gt5o51ia26vtiub8mk9ij38ed077v8u.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB8un86Eki04e0fN0JSEzd5BPt_Ge3YoqQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "75524612449-7gt5o51ia26vtiub8mk9ij38ed077v8u.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:75524612449:android:5040fedf1c197c78732520",
+        "android_client_info": {
+          "package_name": "com.example.mapfollow2"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "75524612449-7gt5o51ia26vtiub8mk9ij38ed077v8u.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB8un86Eki04e0fN0JSEzd5BPt_Ge3YoqQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "75524612449-7gt5o51ia26vtiub8mk9ij38ed077v8u.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

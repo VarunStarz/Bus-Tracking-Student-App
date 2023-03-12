@@ -6,6 +6,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mapfollow2/datamodels/user_location.dart';
 import 'package:mapfollow2/datamodels/views/alarmpage.dart';
+import 'package:mapfollow2/main.dart';
 import 'package:mapfollow2/services/location_service.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
@@ -88,6 +89,49 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     var userLocation = Provider.of<UserLocation>(context);
 
+    Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
+    LatLng _center = LatLng(
+        widget.initialPosition.latitude!, widget.initialPosition.longitude!);
+
+    _addMarker() {
+      final marker = Marker(
+        markerId: MarkerId('place_name'),
+        position: LatLng(widget.initialPosition.latitude!,
+            widget.initialPosition.longitude!),
+        icon: BitmapDescriptor.defaultMarker,
+        // icon: BitmapDescriptor.,
+        infoWindow: InfoWindow(
+          title: 'title',
+          snippet: 'address',
+        ),
+      );
+
+      setState(() {
+        markers[MarkerId('place_name')] = marker;
+      });
+    }
+
+    _onMapCreated(GoogleMapController controller) {
+      _controller.complete(controller);
+      mapController = controller;
+      final marker = Marker(
+        markerId: MarkerId('place_name'),
+        position: LatLng(widget.initialPosition.latitude!,
+            widget.initialPosition.longitude!),
+        icon: BitmapDescriptor.defaultMarker,
+        // icon: BitmapDescriptor.,
+        infoWindow: InfoWindow(
+          title: 'title',
+          snippet: 'address',
+        ),
+      );
+
+      setState(() {
+        markers[MarkerId('place_name')] = marker;
+      });
+      //setPolylines();
+    }
+
     return Scaffold(
       /*child: Text(
           'Lat: ${userLocation.latitude}, Long: ${userLocation.longitude}'),*/
@@ -102,12 +146,11 @@ class _HomePageState extends State<HomePage> {
               ),
               mapType: MapType.normal,
               myLocationEnabled: true,
-              onMapCreated: (GoogleMapController controller) {
-                _controller.complete(controller);
-                mapController = controller;
-                //setPolylines();
-              },
+              onMapCreated: _onMapCreated,
               polylines: _polylines,
+              markers: markers.values.toSet(),
+              onTap: _addMarker(),
+              compassEnabled: true,
             ),
             SafeArea(
               child: Align(
@@ -125,6 +168,19 @@ class _HomePageState extends State<HomePage> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
+                        Container(
+                            alignment: Alignment.topLeft,
+                            child: GestureDetector(
+                              onTap: () {
+                                Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => welcomePage()));
+                              },
+                              child: Icon(
+                                Icons.arrow_back,
+                              ),
+                            )),
                         Text(
                           'Enter destination',
                           style: TextStyle(fontSize: 20),
